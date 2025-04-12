@@ -1,5 +1,5 @@
 {
-  "name": "@naorideas/hubspot-mcp-server",
+  "name": "@naoraideas/hubspot-mcp-server",
   "version": "1.0.0",
   "description": "Hubspot MCP Server - A server implementation for HubSpot integration using Model Context Protocol",
   "type": "module",
