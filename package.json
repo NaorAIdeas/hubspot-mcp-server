@@ -1,13 +1,13 @@
 {
-  "name": "@NaorAIdeas/hubspot-mcp-server",
+  "name": "@naorideas/hubspot-mcp-server",
   "version": "1.0.0",
   "description": "Hubspot MCP Server - A server implementation for HubSpot integration using Model Context Protocol",
   "type": "module",
   "bin": {
-    "hubspot-mcp-server": "./build/index.js"
+    "hubspot-mcp-server": "build/index.js"
   },
   "scripts": {
-    "build": "tsc && shx chmod +x dist/*.js",
+    "build": "tsc && shx chmod +x build/*.js",
     "prepare": "npm run build",
     "watch": "tsc --watch"
   },
@@ -42,5 +42,8 @@
   "homepage": "https://github.com/NaorAIdeas/hubspot-mcp-server#readme",
   "engines": {
     "node": ">=18.0.0"
+  },
+  "devDependencies": {
+    "shx": "^0.4.0"
   }
 }
