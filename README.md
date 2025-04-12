@@ -22,27 +22,6 @@ Ever wondered how AI can transform your HubSpot workflow? Watch how these real-w
 > 
 > *"The 'AI Integration' project is moving to the final stage. Update the deal status, create a new support ticket for the handover process, and schedule a training session with the client's team for next month, making sure to include all relevant contacts from their IT department."*
 
-## Installation
-
-```bash
-npm install @NaorAIdeas/hubspot-mcp-server
-```
-
-## Prerequisites
-
-- Node.js (version 14 or higher)
-- A HubSpot API key (Personal Access Token)
-
-## Configuration
-
-### Obtaining HubSpot API Key
-
-1. Log in to your HubSpot account
-2. Navigate to Settings > Account Setup > Integrations > Private Apps
-3. Click "Create a private app"
-4. Configure your app with the necessary scopes (at minimum, you'll need `crm.objects.contacts.read` and `crm.objects.contacts.write`)
-5. Save the app and copy the generated access token
-
 ## Usage
 
 ### Running as a Command Line Tool
@@ -70,6 +49,55 @@ To use this server with Claude Desktop, add the following configuration to your 
   }
 }
 ```
+
+## Installation
+
+```bash
+npm install @NaorAIdeas/hubspot-mcp-server
+```
+
+## Prerequisites
+
+- Node.js (version 14 or higher)
+- A HubSpot API key (Personal Access Token)
+
+## Configuration
+
+### Obtaining HubSpot API Key
+
+To get started with the HubSpot MCP Server, you'll need to obtain an API key. Here's a detailed guide:
+
+1. **Log in to your HubSpot account**
+   - Visit [HubSpot's website](https://app.hubspot.com/) and sign in to your account
+
+2. **Navigate to Private Apps**
+   - Go to Settings > Account Setup > Integrations > Private Apps
+   - If you don't see this option, ensure you have the necessary permissions
+
+3. **Create a new Private App**
+   - Click "Create a private app"
+   - Give your app a descriptive name (e.g., "HubSpot MCP Server")
+   - Add a description of what the app will be used for
+
+4. **Configure Scopes**
+   - Select the following scopes (minimum required):
+     - `crm.objects.contacts.read`
+     - `crm.objects.contacts.write`
+     - `crm.objects.companies.read`
+     - `crm.objects.companies.write`
+     - `crm.objects.deals.read`
+     - `crm.objects.deals.write`
+     - `crm.objects.custom.read`
+     - `crm.objects.custom.write`
+     - `crm.associations.read`
+     - `crm.associations.write`
+     - `timeline.read`
+     - `timeline.write`
+
+5. **Save and Get Your API Key**
+   - Click "Create app"
+   - Copy the generated access token immediately
+   - Store it securely as it will only be shown once
 
 ## Available Tools
 
