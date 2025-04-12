@@ -41,7 +41,10 @@ To use this server with Claude Desktop, add the following configuration to your 
   "mcpServers": {
     "hubspot": {
       "command": "npx",
-      "args": ["-y", "@NaorAIdeas/hubspot-mcp-server"],
+      "args": [
+        "-y",
+        "@naoraideas/hubspot-mcp-server"
+      ],
       "env": {
         "HUBSPOT_API_KEY": "your_hubspot_api_key_here"
       }
