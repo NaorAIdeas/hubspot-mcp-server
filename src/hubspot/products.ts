@@ -2,7 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import hubspot from '@hubspot/api-client';
 import { z } from "zod";
 import { FilterOperatorEnum } from "@hubspot/api-client/lib/codegen/crm/companies/index.js";
-
+import { ObjectAssociation, convertAssociationsToHubSpotFormat, associationSchema } from './associations.js';
 export const hubspotProductsMCP = (server: McpServer, hubspot: hubspot.Client) => {
     // Basic Product Operations
     server.tool("hubspot-get-product",
@@ -42,10 +42,12 @@ export const hubspotProductsMCP = (server: McpServer, hubspot: hubspot.Client) =
         "Create a new product in HubSpot",
         {
             properties: z.record(z.string()),
+            associations: associationSchema,
         },
-        async ({ properties }) => {
+        async ({ properties, associations }) => {
             const product = await hubspot.crm.products.basicApi.create({
                 properties,
+                associations: convertAssociationsToHubSpotFormat(associations)
             });
             return {
                 content: [{

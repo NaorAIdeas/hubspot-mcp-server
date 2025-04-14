@@ -3,6 +3,7 @@ import hubspot from '@hubspot/api-client';
 import { z } from "zod";
 import { FilterOperatorEnum } from "@hubspot/api-client/lib/codegen/crm/companies/index.js";
 import { AssociationSpecAssociationCategoryEnum, PublicAssociationsForObject } from "@hubspot/api-client/lib/codegen/crm/objects/index.js";
+import { ObjectAssociation, convertAssociationsToHubSpotFormat, associationSchema } from './associations.js';
 
 export const hubspotQuotesMCP = (server: McpServer, hubspot: hubspot.Client) => {
     // Basic Quote Operations
@@ -43,11 +44,12 @@ export const hubspotQuotesMCP = (server: McpServer, hubspot: hubspot.Client) => 
         "Create a new quote in HubSpot",
         {
             properties: z.record(z.string()),
+            associations: associationSchema,
         },
-        async ({ properties }) => {
+        async ({ properties, associations }) => {
             const quote = await hubspot.crm.quotes.basicApi.create({
                 properties,
-                associations: [] as PublicAssociationsForObject[]
+                associations: convertAssociationsToHubSpotFormat(associations)
             });
             return {
                 content: [{

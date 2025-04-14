@@ -3,6 +3,7 @@ import hubspot from '@hubspot/api-client';
 import { z } from "zod";
 import { FilterOperatorEnum } from "@hubspot/api-client/lib/codegen/crm/companies/index.js";
 import { PublicAssociationsForObject } from "@hubspot/api-client/lib/codegen/crm/objects/index.js";
+import { ObjectAssociation, convertAssociationsToHubSpotFormat, associationSchema } from './associations.js';
 
 export const hubspotCustomObjectsMCP = (server: McpServer, hubspot: hubspot.Client) => {
     // Custom Object Schema Operations
@@ -75,11 +76,12 @@ export const hubspotCustomObjectsMCP = (server: McpServer, hubspot: hubspot.Clie
         {
             objectType: z.string(),
             properties: z.record(z.string()),
+            associations: associationSchema,
         },
-        async ({ objectType, properties }) => {
+        async ({ objectType, properties, associations }) => {
             const object = await hubspot.crm.objects.basicApi.create(objectType, {
                 properties,
-                associations: [] as PublicAssociationsForObject[]
+                associations: convertAssociationsToHubSpotFormat(associations)
             });
             return {
                 content: [{

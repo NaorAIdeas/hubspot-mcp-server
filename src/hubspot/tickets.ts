@@ -2,6 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import hubspot from '@hubspot/api-client';
 import { z } from "zod";
 import { FilterOperatorEnum } from "@hubspot/api-client/lib/codegen/crm/companies/index.js";
+import { ObjectAssociation, convertAssociationsToHubSpotFormat, associationSchema } from './associations.js';
 
 export const hubspotTicketsMCP = (server: McpServer, hubspot: hubspot.Client) => {
     // Basic Ticket Operations
@@ -42,10 +43,12 @@ export const hubspotTicketsMCP = (server: McpServer, hubspot: hubspot.Client) =>
         "Create a new ticket in HubSpot",
         {
             properties: z.record(z.string()),
+            associations: associationSchema,
         },
-        async ({ properties }) => {
+        async ({ properties, associations }) => {
             const ticket = await hubspot.crm.tickets.basicApi.create({
                 properties,
+                associations: convertAssociationsToHubSpotFormat(associations)
             });
             return {
                 content: [{

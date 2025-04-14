@@ -2,6 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import hubspot from '@hubspot/api-client';
 import { z } from "zod";
 import { FilterOperatorEnum } from "@hubspot/api-client/lib/codegen/crm/companies/index.js";
+import { ObjectAssociation, convertAssociationsToHubSpotFormat, associationSchema } from './associations.js';
 
 export const hubspotDealsMCP = (server: McpServer, hubspot: hubspot.Client) => {
     // Basic Deal Operations
@@ -42,10 +43,12 @@ export const hubspotDealsMCP = (server: McpServer, hubspot: hubspot.Client) => {
         "Create a new deal in HubSpot",
         {
             properties: z.record(z.string()),
+            associations: associationSchema,
         },
-        async ({ properties }) => {
+        async ({ properties, associations }) => {
             const deal = await hubspot.crm.deals.basicApi.create({
                 properties,
+                associations: convertAssociationsToHubSpotFormat(associations)
             });
             return {
                 content: [{

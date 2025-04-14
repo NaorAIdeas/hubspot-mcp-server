@@ -3,6 +3,7 @@ import hubspot from '@hubspot/api-client';
 import { z } from "zod";
 import { FilterOperatorEnum } from "@hubspot/api-client/lib/codegen/crm/companies/index.js";
 import { RequestHandlerExtra } from "@modelcontextprotocol/sdk/shared/protocol.js";
+import { ObjectAssociation, convertAssociationsToHubSpotFormat, associationSchema } from './associations.js';
 
 export const hubspotContactsMCP = (server: McpServer, hubspot: hubspot.Client) => {
     // Basic Contact Operations
@@ -43,9 +44,13 @@ export const hubspotContactsMCP = (server: McpServer, hubspot: hubspot.Client) =
         "Create a new contact in HubSpot",
         {
             properties: z.record(z.string()),
+            associations: associationSchema,
         },
-        async ({ properties }) => {
-            const contact = await hubspot.crm.contacts.basicApi.create({ properties });
+        async ({ properties, associations }) => {
+            const contact = await hubspot.crm.contacts.basicApi.create({
+                properties,
+                associations: convertAssociationsToHubSpotFormat(associations)
+            });
             return {
                 content: [{
                     type: "text",
