@@ -3,6 +3,7 @@ import hubspot from '@hubspot/api-client';
 import { z } from "zod";
 import { FilterOperatorEnum, AssociationSpecAssociationCategoryEnum } from "@hubspot/api-client/lib/codegen/crm/objects/index.js";
 import { PublicAssociationsForObject } from "@hubspot/api-client/lib/codegen/crm/objects/index.js";
+import { ObjectAssociation, convertAssociationsToHubSpotFormat, associationSchema } from '../associations.js';
 
 export const hubspotMeetingsMCP = (server: McpServer, hubspot: hubspot.Client) => {
     // Get Meeting
@@ -33,12 +34,13 @@ export const hubspotMeetingsMCP = (server: McpServer, hubspot: hubspot.Client) =
                 hs_timestamp: z.string().optional(),
                 hs_communication_channel_type: z.string().optional(),
             }),
+            associations: associationSchema,
         },
-        async ({ properties }) => {
+        async ({ properties, associations }) => {
             properties.hs_timestamp ??= new Date().toISOString();
             const meeting = await hubspot.crm.objects.meetings.basicApi.create({
                 properties,
-                associations: [] as PublicAssociationsForObject[]
+                associations: convertAssociationsToHubSpotFormat(associations)
             });
             return {
                 content: [{
