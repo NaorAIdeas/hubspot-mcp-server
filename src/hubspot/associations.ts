@@ -2,6 +2,37 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import hubspot, { AssociationTypes } from '@hubspot/api-client';
 import { z } from "zod";
 import { AssociationSpecAssociationCategoryEnum } from "@hubspot/api-client/lib/codegen/crm/companies/index.js";
+import { PublicAssociationsForObject } from "@hubspot/api-client/lib/codegen/crm/objects/index.js";
+
+// Common interface for object associations
+export interface ObjectAssociation {
+    toObjectType: string;
+    toObjectId: string;
+    associationTypeId?: number;
+}
+
+// Common schema for object associations
+export const associationSchema = z.array(z.object({
+    toObjectType: z.string().describe("The type of object to associate with (e.g. 'contacts', 'companies', 'deals')"),
+    toObjectId: z.string().describe("The ID of the object to associate with"),
+    associationTypeId: z.number().default(1).describe("The type of association (defaults to 1 for standard association)"),
+})).optional().describe("Optional list of objects to associate with");
+
+// Helper function to convert object associations to HubSpot format
+export function convertAssociationsToHubSpotFormat(associations?: ObjectAssociation[]): PublicAssociationsForObject[] {
+    if (!associations) return [];
+    
+    return associations.map(assoc => ({
+        to: {
+            id: assoc.toObjectId,
+            type: assoc.toObjectType
+        },
+        types: [{
+            associationTypeId: assoc.associationTypeId || 1,
+            associationCategory: AssociationSpecAssociationCategoryEnum.HubspotDefined
+        }]
+    }));
+}
 
 // Common object types in HubSpot
 const HUBSPOT_OBJECT_TYPES = [
