@@ -2,6 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import hubspot from '@hubspot/api-client';
 import { z } from "zod";
 import { FilterOperatorEnum, AssociationSpecAssociationCategoryEnum } from "@hubspot/api-client/lib/codegen/crm/objects/index.js";
+import { ObjectAssociation, convertAssociationsToHubSpotFormat, associationSchema } from '../associations.js';
 
 export const hubspotNotesMCP = (server: McpServer, hubspot: hubspot.Client) => {
     // Basic Note Operations
@@ -46,26 +47,13 @@ export const hubspotNotesMCP = (server: McpServer, hubspot: hubspot.Client) => {
                 hs_timestamp: z.string().optional(),
                 hs_note_status: z.string().optional(),
             }),
-            associations: z.array(z.object({
-                toObjectType: z.string().describe("The type of object to associate with (e.g. 'contacts', 'companies', 'deals')"),
-                toObjectId: z.string().describe("The ID of the object to associate with"),
-                associationTypeId: z.number().default(1).describe("The type of association (defaults to 1 for standard association)"),
-            })).optional().describe("Optional list of objects to associate this note with"),
+            associations: associationSchema,
         },
         async ({ properties, associations }) => {
             properties.hs_timestamp ??= new Date().toISOString(); 
             const note = await hubspot.crm.objects.notes.basicApi.create({
                 properties,
-                associations: associations ? associations.map(assoc => ({
-                    to: {
-                        id: assoc.toObjectId,
-                        type: assoc.toObjectType
-                    },
-                    types: [{
-                        associationTypeId: assoc.associationTypeId,
-                        associationCategory: AssociationSpecAssociationCategoryEnum.HubspotDefined
-                    }]
-                })) : []
+                associations: convertAssociationsToHubSpotFormat(associations)
             });
             return {
                 content: [{

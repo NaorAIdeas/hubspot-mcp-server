@@ -3,6 +3,7 @@ import hubspot from '@hubspot/api-client';
 import { z } from "zod";
 import { FilterOperatorEnum, AssociationSpecAssociationCategoryEnum } from "@hubspot/api-client/lib/codegen/crm/objects/index.js";
 import { PublicAssociationsForObject } from "@hubspot/api-client/lib/codegen/crm/objects/index.js";
+import { ObjectAssociation, convertAssociationsToHubSpotFormat, associationSchema } from '../associations.js';
 
 export const hubspotTaxMCP = (server: McpServer, hubspot: hubspot.Client) => {
     // Get Tax
@@ -31,25 +32,12 @@ export const hubspotTaxMCP = (server: McpServer, hubspot: hubspot.Client) => {
                 hs_tax_type: z.string().optional(),
                 hs_tax_status: z.string().optional(),
             }),
-            associations: z.array(z.object({
-                toObjectType: z.string().describe("The type of object to associate with (e.g. 'contacts', 'companies', 'deals')"),
-                toObjectId: z.string().describe("The ID of the object to associate with"),
-                associationTypeId: z.number().default(1).describe("The type of association (defaults to 1 for standard association)"),
-            })).optional().describe("Optional list of objects to associate this tax with"),
+            associations: associationSchema,
         },
         async ({ properties, associations }) => {
             const tax = await hubspot.crm.objects.taxes.basicApi.create({
                 properties,
-                associations: associations ? associations.map(assoc => ({
-                    to: {
-                        id: assoc.toObjectId,
-                        type: assoc.toObjectType
-                    },
-                    types: [{
-                        associationTypeId: assoc.associationTypeId,
-                        associationCategory: AssociationSpecAssociationCategoryEnum.HubspotDefined
-                    }]
-                })) : []
+                associations: convertAssociationsToHubSpotFormat(associations)
             });
             return {
                 content: [{

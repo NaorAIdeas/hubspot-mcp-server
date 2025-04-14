@@ -3,6 +3,7 @@ import hubspot from '@hubspot/api-client';
 import { z } from "zod";
 import { FilterOperatorEnum } from "@hubspot/api-client/lib/codegen/crm/companies/index.js";
 import { PublicAssociationsForObject } from "@hubspot/api-client/lib/codegen/crm/objects/index.js";
+import { ObjectAssociation, convertAssociationsToHubSpotFormat, associationSchema } from '../associations.js';
 
 export const hubspotLeadsMCP = (server: McpServer, hubspot: hubspot.Client) => {
     // Basic Lead Operations
@@ -14,11 +15,12 @@ export const hubspotLeadsMCP = (server: McpServer, hubspot: hubspot.Client) => {
                 hs_lead_source: z.string().optional(),
                 hs_lead_owner: z.string().optional(),
             }),
+            associations: associationSchema,
         },
-        async ({ properties }) => {
+        async ({ properties, associations }) => {
             const lead = await hubspot.crm.objects.leads.basicApi.create({
                 properties,
-                associations: [] as PublicAssociationsForObject[]
+                associations: convertAssociationsToHubSpotFormat(associations)
             });
             return {
                 content: [{

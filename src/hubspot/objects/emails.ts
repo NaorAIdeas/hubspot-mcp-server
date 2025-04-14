@@ -3,6 +3,7 @@ import hubspot from '@hubspot/api-client';
 import { z } from "zod";
 import { FilterOperatorEnum, AssociationSpecAssociationCategoryEnum } from "@hubspot/api-client/lib/codegen/crm/objects/index.js";
 import { PublicAssociationsForObject } from "@hubspot/api-client/lib/codegen/crm/objects/index.js";
+import { ObjectAssociation, convertAssociationsToHubSpotFormat, associationSchema } from '../associations.js';
 
 export const hubspotEmailsMCP = (server: McpServer, hubspot: hubspot.Client) => {
     // Get Email
@@ -32,12 +33,13 @@ export const hubspotEmailsMCP = (server: McpServer, hubspot: hubspot.Client) => 
                 hs_email_direction: z.string().default("EMAIL"),
                 hs_timestamp: z.string().optional(),
             }),
+            associations: associationSchema,
         },
-        async ({ properties }) => {
+        async ({ properties, associations }) => {
             properties.hs_timestamp ??= new Date().toISOString();
             const email = await hubspot.crm.objects.emails.basicApi.create({
                 properties,
-                associations: [] as PublicAssociationsForObject[]
+                associations: convertAssociationsToHubSpotFormat(associations)
             });
             return {
                 content: [{
