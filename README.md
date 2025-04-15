@@ -61,7 +61,7 @@ npm install @NaorAIdeas/hubspot-mcp-server
 
 ## Prerequisites
 
-- Node.js (version 14 or higher)
+- [Node.js](https://nodejs.org/en) (version 14 or higher) - Download and install from the official website
 - A HubSpot API key (Personal Access Token)
 
 ## Configuration
